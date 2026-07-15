@@ -2,19 +2,21 @@
 
 namespace App\Models;
 
+use App\Concerns\HasTranslations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Game extends Model
 {
+    use HasTranslations;
+
     protected $fillable = [
         'city_id',
         'slug',
-        'title_fa',
-        'title_en',
-        'subtitle_fa',
-        'description_fa',
+        'title',
+        'subtitle',
+        'description',
         'stage_count',
         'is_active',
     ];
@@ -22,6 +24,9 @@ class Game extends Model
     protected function casts(): array
     {
         return [
+            'title' => 'array',
+            'subtitle' => 'array',
+            'description' => 'array',
             'is_active' => 'boolean',
         ];
     }
@@ -34,6 +39,17 @@ class Game extends Model
     public function stages(): HasMany
     {
         return $this->hasMany(Stage::class)->orderBy('order');
+    }
+
+    public function toLocalizedArray(?string $locale = null): array
+    {
+        return [
+            'slug' => $this->slug,
+            'title' => $this->translate('title', $locale),
+            'subtitle' => $this->translate('subtitle', $locale),
+            'description' => $this->translate('description', $locale),
+            'stage_count' => $this->stage_count,
+        ];
     }
 
     public function getRouteKeyName(): string

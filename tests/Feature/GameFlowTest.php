@@ -67,7 +67,8 @@ class GameFlowTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('Stages/Show')
                 ->where('stage.order', 1)
-                ->where('stage.code', 'VANKILA'));
+                ->where('stage.code', 'VANKILA')
+                ->where('navigation.previous_stage', null));
 
         $this->post(route('stages.submit', [$this->city, $this->game, 'stage' => 1]), [
             'code' => 'VANKILA',
@@ -83,12 +84,57 @@ class GameFlowTest extends TestCase
     }
 
     #[Test]
+    public function previous_stages_can_be_reviewed(): void
+    {
+        $this->post(route('games.start', [$this->city, $this->game]));
+
+        $this->post(route('stages.submit', [$this->city, $this->game, 'stage' => 1]), [
+            'code' => 'VANKILA',
+        ]);
+
+        $this->get(route('stages.show', [$this->city, $this->game, 'stage' => 1]))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('navigation.previous_stage', null)
+                ->where('navigation.is_review', true));
+
+        $this->get(route('stages.show', [$this->city, $this->game, 'stage' => 2]))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('navigation.previous_stage', 1)
+                ->where('navigation.is_review', false));
+    }
+
+    #[Test]
     public function future_stages_are_locked_until_reached(): void
     {
         $this->post(route('games.start', [$this->city, $this->game]));
 
         $this->get(route('stages.show', [$this->city, $this->game, 'stage' => 3]))
             ->assertForbidden();
+    }
+
+    #[Test]
+    public function locale_can_be_switched(): void
+    {
+        $this->post(route('locale.update'), ['locale' => 'fi'])
+            ->assertRedirect();
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('locale', 'fi'));
+    }
+
+    #[Test]
+    public function localized_content_follows_selected_locale(): void
+    {
+        $this->post(route('locale.update'), ['locale' => 'en']);
+
+        $this->get(route('cities.show', $this->city))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('city.name', 'Vaasa')
+                ->where('games.0.title', 'Twelve Barrels: The Hidden Grain of Nikolaistad'));
     }
 
     #[Test]

@@ -14,8 +14,12 @@ class CityController extends Controller
         $cities = City::query()
             ->where('is_active', true)
             ->withCount(['activeGames as games_count'])
-            ->orderBy('name_fa')
-            ->get(['id', 'slug', 'name_fa', 'name_en', 'description_fa']);
+            ->orderBy('slug')
+            ->get()
+            ->map(fn (City $city) => [
+                ...$city->toLocalizedArray(),
+                'games_count' => $city->games_count,
+            ]);
 
         return Inertia::render('Cities/Index', [
             'cities' => $cities,
@@ -26,18 +30,11 @@ class CityController extends Controller
     {
         abort_unless($city->is_active, 404);
 
-        $city->load(['activeGames' => fn ($query) => $query->orderBy('title_fa')]);
+        $city->load(['activeGames' => fn ($query) => $query->orderBy('slug')]);
 
         return Inertia::render('Cities/Show', [
-            'city' => $city->only(['slug', 'name_fa', 'name_en', 'description_fa']),
-            'games' => $city->activeGames->map(fn (Game $game) => [
-                'slug' => $game->slug,
-                'title_fa' => $game->title_fa,
-                'title_en' => $game->title_en,
-                'subtitle_fa' => $game->subtitle_fa,
-                'description_fa' => $game->description_fa,
-                'stage_count' => $game->stage_count,
-            ]),
+            'city' => $city->toLocalizedArray(),
+            'games' => $city->activeGames->map(fn (Game $game) => $game->toLocalizedArray()),
         ]);
     }
 }

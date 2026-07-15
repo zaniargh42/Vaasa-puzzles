@@ -35,8 +35,8 @@ class GameController extends Controller
         }
 
         return Inertia::render('Games/Show', [
-            'city' => $city->only(['slug', 'name_fa']),
-            'game' => $game->only(['slug', 'title_fa', 'title_en', 'subtitle_fa', 'description_fa', 'stage_count']),
+            'city' => $city->toLocalizedArray(),
+            'game' => $game->toLocalizedArray(),
         ]);
     }
 
@@ -65,8 +65,8 @@ class GameController extends Controller
         }
 
         return Inertia::render('Games/Complete', [
-            'city' => $city->only(['slug', 'name_fa']),
-            'game' => $game->only(['slug', 'title_fa', 'title_en']),
+            'city' => $city->toLocalizedArray(),
+            'game' => $game->toLocalizedArray(),
         ]);
     }
 

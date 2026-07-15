@@ -1,5 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { useI18n } from '@/composables/useI18n';
 import { Link } from '@inertiajs/vue3';
 
 defineProps({
@@ -12,21 +13,25 @@ defineProps({
         required: true,
     },
 });
+
+const { t } = useI18n();
 </script>
 
 <template>
     <AppLayout
-        :title="city.name_fa"
-        :subtitle="city.description_fa || 'یک بازی را انتخاب کنید.'"
+        :title="city.name"
+        :subtitle="city.description || t('cities.choose_game')"
     >
         <p class="mb-4 text-sm text-stone-500">
-            <Link href="/cities" class="hover:text-stone-800">شهرها</Link>
+            <Link href="/cities" class="hover:text-stone-800">
+                {{ t('nav.cities') }}
+            </Link>
             <span class="mx-2">/</span>
-            <span>{{ city.name_fa }}</span>
+            <span>{{ city.name }}</span>
         </p>
 
         <div v-if="games.length === 0" class="rounded-xl bg-white p-6 text-stone-600">
-            برای این شهر هنوز بازی‌ای منتشر نشده است.
+            {{ t('cities.no_games') }}
         </div>
 
         <div v-else class="grid gap-4">
@@ -36,26 +41,23 @@ defineProps({
                 :href="`/cities/${city.slug}/games/${game.slug}`"
                 class="block rounded-2xl border border-stone-200 bg-white p-6 shadow-sm transition hover:border-amber-300 hover:shadow-md"
             >
-                <p class="text-xs font-medium uppercase tracking-wide text-amber-700">
-                    {{ game.title_en }}
-                </p>
-                <h2 class="mt-2 text-xl font-semibold text-stone-900">
-                    {{ game.title_fa }}
+                <h2 class="text-xl font-semibold text-stone-900">
+                    {{ game.title }}
                 </h2>
                 <p
-                    v-if="game.subtitle_fa"
+                    v-if="game.subtitle"
                     class="mt-1 text-sm text-stone-600"
                 >
-                    {{ game.subtitle_fa }}
+                    {{ game.subtitle }}
                 </p>
                 <p
-                    v-if="game.description_fa"
+                    v-if="game.description"
                     class="mt-3 text-sm leading-7 text-stone-600"
                 >
-                    {{ game.description_fa }}
+                    {{ game.description }}
                 </p>
                 <p class="mt-4 text-xs text-stone-500">
-                    {{ game.stage_count }} مرحله
+                    {{ t('games.stages', { count: game.stage_count }) }}
                 </p>
             </Link>
         </div>

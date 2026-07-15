@@ -1,5 +1,7 @@
 <script setup>
+import LanguageSwitcher from '@/Components/LanguageSwitcher.vue';
 import { Link } from '@inertiajs/vue3';
+import { useI18n } from '@/composables/useI18n';
 
 defineProps({
     title: {
@@ -11,25 +13,31 @@ defineProps({
         default: '',
     },
 });
+
+const { t, direction } = useI18n();
 </script>
 
 <template>
-    <div class="min-h-screen bg-stone-100 text-stone-900" dir="rtl">
+    <div class="min-h-screen bg-stone-100 text-stone-900" :dir="direction">
         <header class="border-b border-stone-200 bg-white/90 backdrop-blur">
             <div
-                class="mx-auto flex max-w-3xl items-center justify-between px-4 py-4 sm:px-6"
+                class="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-4 sm:px-6"
             >
                 <Link
                     href="/"
                     class="text-lg font-semibold tracking-tight text-stone-800"
                 >
-                    بازی‌های شهری
+                    {{ t('name') }}
                 </Link>
-                <nav class="text-sm text-stone-500">
-                    <Link href="/cities" class="hover:text-stone-800">
-                        شهرها
-                    </Link>
-                </nav>
+
+                <div class="flex items-center gap-4">
+                    <nav class="text-sm text-stone-500">
+                        <Link href="/cities" class="hover:text-stone-800">
+                            {{ t('nav.cities') }}
+                        </Link>
+                    </nav>
+                    <LanguageSwitcher />
+                </div>
             </div>
         </header>
 

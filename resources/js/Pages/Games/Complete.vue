@@ -2,6 +2,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { useI18n } from '@/composables/useI18n';
 import { Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -15,6 +16,7 @@ const props = defineProps({
     },
 });
 
+const { t } = useI18n();
 const form = useForm({});
 
 const restartGame = () => {
@@ -24,33 +26,32 @@ const restartGame = () => {
 
 <template>
     <AppLayout
-        title="پایان بازی"
-        :subtitle="`${game.title_fa} — ${city.name_fa}`"
+        :title="t('games.complete.title')"
+        :subtitle="`${game.title} — ${city.name}`"
     >
         <div class="space-y-6 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
             <p class="text-lg font-semibold text-stone-900">
-                تبریک! همهٔ مراحل را گذراندید.
+                {{ t('games.complete.congrats') }}
             </p>
 
             <div class="leading-8 text-stone-700 whitespace-pre-line">
                 <p>
-                    غله دزدیده نشد؛ پنهان شد.
+                    {{ t('games.complete.truth') }}
                     <span class="font-mono text-sm" dir="ltr">
-                        EI VARASTETTU. KÄTKETTY.
+                        {{ t('games.complete.truth_code') }}
                     </span>
                 </p>
                 <p class="mt-4">
-                    Viktor Granholm مجرم اصلی بود. ۱۲ بشکه چاودار در انبار
-                    فرعی کارخانهٔ پنبه پیدا شد.
+                    {{ t('games.complete.summary') }}
                 </p>
             </div>
 
             <div class="flex flex-wrap gap-3">
                 <Link :href="`/cities/${city.slug}`">
-                    <PrimaryButton>بازگشت به بازی‌های شهر</PrimaryButton>
+                    <PrimaryButton>{{ t('games.complete.back') }}</PrimaryButton>
                 </Link>
                 <SecondaryButton :disabled="form.processing" @click="restartGame">
-                    بازی دوباره
+                    {{ t('games.complete.restart') }}
                 </SecondaryButton>
             </div>
         </div>

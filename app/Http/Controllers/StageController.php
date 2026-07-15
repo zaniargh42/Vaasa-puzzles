@@ -40,22 +40,19 @@ class StageController extends Controller
         abort_unless($this->progress->canAccessStage($game, $stage), 403);
 
         $stageModel = $this->findStage($game, $stage);
+        $currentStage = $this->progress->currentStageOrder($game);
 
         return Inertia::render('Stages/Show', [
-            'city' => $city->only(['slug', 'name_fa']),
-            'game' => $game->only(['slug', 'title_fa', 'stage_count']),
-            'stage' => [
-                'order' => $stageModel->order,
-                'act' => $stageModel->act,
-                'location_fa' => $stageModel->location_fa,
-                'title_fa' => $stageModel->title_fa,
-                'intro_text' => $stageModel->intro_text,
-                'code' => $stageModel->code,
-                'next_destination_fa' => $stageModel->next_destination_fa,
-            ],
+            'city' => $city->toLocalizedArray(),
+            'game' => $game->toLocalizedArray(),
+            'stage' => $stageModel->toLocalizedArray(),
             'progress' => [
-                'current' => $this->progress->currentStageOrder($game),
+                'current' => $currentStage,
                 'total' => $game->stage_count,
+            ],
+            'navigation' => [
+                'previous_stage' => $stage > 1 ? $stage - 1 : null,
+                'is_review' => $stage < $currentStage,
             ],
         ]);
     }
@@ -65,6 +62,16 @@ class StageController extends Controller
         $this->ensureGameBelongsToCity($city, $game);
 
         abort_unless($this->progress->canAccessStage($game, $stage), 403);
+
+        $currentStage = $this->progress->currentStageOrder($game);
+
+        if ($stage < $currentStage) {
+            return redirect()->route('stages.show', [
+                'city' => $city,
+                'game' => $game,
+                'stage' => $stage,
+            ]);
+        }
 
         $stageModel = $this->findStage($game, $stage);
 
@@ -78,7 +85,7 @@ class StageController extends Controller
             $stageModel->code_alternatives,
         )) {
             return back()->withErrors([
-                'code' => 'رمز واردشده درست نیست.',
+                'code' => __('app.stages.invalid_code'),
             ]);
         }
 
