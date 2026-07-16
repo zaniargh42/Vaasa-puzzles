@@ -40,17 +40,22 @@ const form = useForm({
 
 const actLabel = computed(() => t(`stages.acts.${props.stage.act}`));
 
-const previousStageUrl = computed(() => {
-    if (! props.navigation.previous_stage) {
-        return null;
-    }
+const stageUrl = (order) =>
+    `/cities/${props.city.slug}/games/${props.game.slug}/stages/${order}`;
 
-    return `/cities/${props.city.slug}/games/${props.game.slug}/stages/${props.navigation.previous_stage}`;
-});
-
-const currentStageUrl = computed(() =>
-    `/cities/${props.city.slug}/games/${props.game.slug}/stages/${props.progress.current}`,
+const previousStageUrl = computed(() =>
+    props.navigation.previous_stage
+        ? stageUrl(props.navigation.previous_stage)
+        : null,
 );
+
+const nextStageUrl = computed(() =>
+    props.navigation.next_stage
+        ? stageUrl(props.navigation.next_stage)
+        : null,
+);
+
+const currentStageUrl = computed(() => stageUrl(props.progress.current));
 
 const submitCode = () => {
     form.post(
@@ -109,11 +114,21 @@ const submitCode = () => {
                     </p>
                 </div>
 
-                <Link v-if="previousStageUrl" :href="previousStageUrl">
-                    <SecondaryButton type="button">
-                        {{ t('stages.previous') }}
-                    </SecondaryButton>
-                </Link>
+                <div
+                    v-if="previousStageUrl || nextStageUrl"
+                    class="flex flex-wrap gap-2"
+                >
+                    <Link v-if="previousStageUrl" :href="previousStageUrl">
+                        <SecondaryButton type="button">
+                            {{ t('stages.previous') }}
+                        </SecondaryButton>
+                    </Link>
+                    <Link v-if="nextStageUrl" :href="nextStageUrl">
+                        <SecondaryButton type="button">
+                            {{ t('stages.next') }}
+                        </SecondaryButton>
+                    </Link>
+                </div>
             </div>
 
             <p
@@ -126,6 +141,22 @@ const submitCode = () => {
             <div class="leading-8 text-stone-700 whitespace-pre-line">
                 {{ stage.intro_text }}
             </div>
+
+            <aside
+                v-if="stage.puzzle_note"
+                class="rounded-xl border border-amber-300 bg-amber-50 px-4 py-4 text-sm leading-7 text-amber-950"
+                dir="rtl"
+            >
+                <p class="mb-2 text-xs font-semibold tracking-wide text-amber-800 uppercase">
+                    {{ t('stages.dev_puzzle_title') }}
+                </p>
+                <p class="mb-3 text-xs text-amber-700">
+                    {{ t('stages.dev_puzzle_hint') }}
+                </p>
+                <div class="whitespace-pre-line">
+                    {{ stage.puzzle_note }}
+                </div>
+            </aside>
 
             <CopyableCode :code="stage.code" />
 

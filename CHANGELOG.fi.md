@@ -2,6 +2,13 @@
 
 Kaikki merkittävät muutokset dokumentoidaan tässä tiedostossa.
 
+## [0.3.0] — 2026-07-16
+
+### Lisätty
+- Seuraava vaihe -painike edellisen vaiheen rinnalla aiempia vaiheita katseltaessa
+- Väliaikaiset kehittäjän muistiinpanot pulmasuunnittelusta kaikille 15 vaiheelle (vain tiimille)
+- Pulmamuistiinpanolaatikko vaihesivulla
+
 ## [0.2.0] — 2026-07-15
 
 ### Lisätty

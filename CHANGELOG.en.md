@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.3.0] — 2026-07-16
+
+### Added
+- Next stage button alongside previous stage when reviewing past stages
+- Temporary developer puzzle design notes for all 15 stages (team use only)
+- Puzzle note panel on the stage page
+
 ## [0.2.0] — 2026-07-15
 
 ### Added

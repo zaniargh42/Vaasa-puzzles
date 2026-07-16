@@ -7,6 +7,7 @@ use App\Models\Game;
 use App\Models\Stage;
 use App\Services\GameCodeValidator;
 use App\Services\GameProgressService;
+use Database\Seeders\Data\TwelveBarrelsPuzzleNotes;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -41,17 +42,20 @@ class StageController extends Controller
 
         $stageModel = $this->findStage($game, $stage);
         $currentStage = $this->progress->currentStageOrder($game);
+        $stagePayload = $stageModel->toLocalizedArray();
+        $stagePayload['puzzle_note'] = TwelveBarrelsPuzzleNotes::forStage($stage);
 
         return Inertia::render('Stages/Show', [
             'city' => $city->toLocalizedArray(),
             'game' => $game->toLocalizedArray(),
-            'stage' => $stageModel->toLocalizedArray(),
+            'stage' => $stagePayload,
             'progress' => [
                 'current' => $currentStage,
                 'total' => $game->stage_count,
             ],
             'navigation' => [
                 'previous_stage' => $stage > 1 ? $stage - 1 : null,
+                'next_stage' => $stage < $currentStage ? $stage + 1 : null,
                 'is_review' => $stage < $currentStage,
             ],
         ]);

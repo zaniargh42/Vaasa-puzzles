@@ -56,9 +56,12 @@ return [
         'submit_next' => 'Siirry seuraavaan vaiheeseen',
         'submit_finish' => 'Lopeta peli',
         'previous' => 'Edellinen vaihe',
+        'next' => 'Seuraava vaihe',
         'return_current' => 'Palaa nykyiseen vaiheeseen',
         'review_note' => 'Tarkastelet aiemmin suorittamaasi vaihetta.',
         'invalid_code' => 'Syöttämäsi koodi on virheellinen.',
+        'dev_puzzle_title' => 'Kehittäjän muistiinpano — pulman suunnittelu (väliaikainen)',
+        'dev_puzzle_hint' => 'Vain tiimiä varten; tämä osio poistetaan myöhemmin.',
     ],
 
     'language' => [

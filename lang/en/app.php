@@ -56,9 +56,12 @@ return [
         'submit_next' => 'Go to next stage',
         'submit_finish' => 'Finish game',
         'previous' => 'Previous stage',
+        'next' => 'Next stage',
         'return_current' => 'Return to current stage',
         'review_note' => 'You are reviewing a completed stage.',
         'invalid_code' => 'The code you entered is incorrect.',
+        'dev_puzzle_title' => 'Dev note — puzzle design (temporary)',
+        'dev_puzzle_hint' => 'For the team only; this section will be removed later.',
     ],
 
     'language' => [

@@ -68,7 +68,8 @@ class GameFlowTest extends TestCase
                 ->component('Stages/Show')
                 ->where('stage.order', 1)
                 ->where('stage.code', 'VANKILA')
-                ->where('navigation.previous_stage', null));
+                ->where('navigation.previous_stage', null)
+                ->has('stage.puzzle_note'));
 
         $this->post(route('stages.submit', [$this->city, $this->game, 'stage' => 1]), [
             'code' => 'VANKILA',
@@ -96,12 +97,14 @@ class GameFlowTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->where('navigation.previous_stage', null)
+                ->where('navigation.next_stage', 2)
                 ->where('navigation.is_review', true));
 
         $this->get(route('stages.show', [$this->city, $this->game, 'stage' => 2]))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->where('navigation.previous_stage', 1)
+                ->where('navigation.next_stage', null)
                 ->where('navigation.is_review', false));
     }
 
