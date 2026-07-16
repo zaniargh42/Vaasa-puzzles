@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\City;
 use App\Models\Game;
 use App\Models\Stage;
+use App\Services\GameBagService;
 use App\Services\GameCodeValidator;
 use App\Services\GameProgressService;
+use App\Services\Stage1PuzzleService;
+use App\Support\StageLocations;
 use Database\Seeders\Data\TwelveBarrelsPuzzleNotes;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,6 +21,8 @@ class StageController extends Controller
     public function __construct(
         private GameProgressService $progress,
         private GameCodeValidator $codeValidator,
+        private GameBagService $bag,
+        private Stage1PuzzleService $stage1,
     ) {}
 
     public function show(City $city, Game $game, int $stage): Response|RedirectResponse
@@ -43,7 +48,17 @@ class StageController extends Controller
         $stageModel = $this->findStage($game, $stage);
         $currentStage = $this->progress->currentStageOrder($game);
         $stagePayload = $stageModel->toLocalizedArray();
-        $stagePayload['puzzle_note'] = TwelveBarrelsPuzzleNotes::forStage($stage);
+        // Temporary puzzle notes: hide for stage 1 (live puzzle), keep for later stages.
+        $stagePayload['puzzle_note'] = $stage === 1
+            ? null
+            : TwelveBarrelsPuzzleNotes::forStage($stage);
+
+        $codeUnlocked = $stage !== 1 || $this->stage1->isAligned($game);
+
+        if (! $codeUnlocked) {
+            $stagePayload['code'] = null;
+            $stagePayload['next_destination'] = null;
+        }
 
         return Inertia::render('Stages/Show', [
             'city' => $city->toLocalizedArray(),
@@ -58,6 +73,10 @@ class StageController extends Controller
                 'next_stage' => $stage < $currentStage ? $stage + 1 : null,
                 'is_review' => $stage < $currentStage,
             ],
+            'bag' => $this->stage1->presentBagItems($game),
+            'stage1' => $stage === 1 ? $this->stage1->clientConfig($game) : null,
+            'code_unlocked' => $codeUnlocked,
+            'directions' => StageLocations::forStage($stage),
         ]);
     }
 
@@ -74,6 +93,12 @@ class StageController extends Controller
                 'city' => $city,
                 'game' => $game,
                 'stage' => $stage,
+            ]);
+        }
+
+        if ($stage === 1 && ! $this->stage1->isAligned($game)) {
+            return back()->withErrors([
+                'code' => __('app.stage1.code_locked'),
             ]);
         }
 

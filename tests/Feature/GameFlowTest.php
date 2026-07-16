@@ -57,10 +57,53 @@ class GameFlowTest extends TestCase
     }
 
     #[Test]
+    public function stage_one_map_can_be_added_to_bag_and_aligned(): void
+    {
+        $this->post(route('games.start', [$this->city, $this->game]));
+
+        $this->get(route('stages.show', [$this->city, $this->game, 'stage' => 1]))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('stage.code', null)
+                ->where('stage.next_destination', null)
+                ->where('code_unlocked', false)
+                ->where('stage1.has_map', false)
+                ->has('directions'));
+
+        $this->post(route('bag.collect-setterberg', [$this->city, $this->game]))
+            ->assertRedirect();
+
+        $this->get(route('stages.show', [$this->city, $this->game, 'stage' => 1]))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('stage1.has_map', true)
+                ->has('bag', 1));
+
+        $this->post(
+            route('puzzles.stage1.align', [$this->city, $this->game]),
+            config('puzzles.stage1_setterberg.target'),
+        )->assertRedirect();
+
+        $this->get(route('stages.show', [$this->city, $this->game, 'stage' => 1]))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('code_unlocked', true)
+                ->where('stage.code', 'VANKILA')
+                ->where('stage1.aligned', true)
+                ->where('stage.next_destination', 'زندان واسا')
+                ->where('stage.puzzle_note', null)
+                ->has('stage1.markers', 2)
+                ->where('bag.0.type', 'map_overlay')
+                ->has('bag.0.markers', 2));
+    }
+
+    #[Test]
     public function player_can_progress_through_stages_with_codes(): void
     {
         $this->post(route('games.start', [$this->city, $this->game]))
             ->assertRedirect(route('stages.show', [$this->city, $this->game, 'stage' => 1]));
+
+        $this->completeStageOnePuzzle();
 
         $this->get(route('stages.show', [$this->city, $this->game, 'stage' => 1]))
             ->assertOk()
@@ -69,7 +112,7 @@ class GameFlowTest extends TestCase
                 ->where('stage.order', 1)
                 ->where('stage.code', 'VANKILA')
                 ->where('navigation.previous_stage', null)
-                ->has('stage.puzzle_note'));
+                ->where('stage.puzzle_note', null));
 
         $this->post(route('stages.submit', [$this->city, $this->game, 'stage' => 1]), [
             'code' => 'VANKILA',
@@ -88,6 +131,7 @@ class GameFlowTest extends TestCase
     public function previous_stages_can_be_reviewed(): void
     {
         $this->post(route('games.start', [$this->city, $this->game]));
+        $this->completeStageOnePuzzle();
 
         $this->post(route('stages.submit', [$this->city, $this->game, 'stage' => 1]), [
             'code' => 'VANKILA',
@@ -141,9 +185,18 @@ class GameFlowTest extends TestCase
     }
 
     #[Test]
+    public function map_calibrator_is_available_in_local(): void
+    {
+        $this->get(route('dev.map-calibrator'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('Dev/MapCalibrator'));
+    }
+
+    #[Test]
     public function completing_final_stage_shows_completion_page(): void
     {
         $this->post(route('games.start', [$this->city, $this->game]));
+        $this->completeStageOnePuzzle();
 
         $stages = Stage::query()
             ->where('game_id', $this->game->id)
@@ -173,5 +226,14 @@ class GameFlowTest extends TestCase
         $this->get(route('games.complete', [$this->city, $this->game]))
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('Games/Complete'));
+    }
+
+    private function completeStageOnePuzzle(): void
+    {
+        $this->post(route('bag.collect-setterberg', [$this->city, $this->game]));
+        $this->post(
+            route('puzzles.stage1.align', [$this->city, $this->game]),
+            config('puzzles.stage1_setterberg.target'),
+        );
     }
 }

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\City;
 use App\Models\Game;
+use App\Services\GameBagService;
 use App\Services\GameProgressService;
+use App\Services\Stage1PuzzleService;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -13,6 +15,8 @@ class GameController extends Controller
 {
     public function __construct(
         private GameProgressService $progress,
+        private GameBagService $bag,
+        private Stage1PuzzleService $stage1,
     ) {}
 
     public function show(City $city, Game $game): Response|RedirectResponse
@@ -75,6 +79,8 @@ class GameController extends Controller
         $this->ensureGameBelongsToCity($city, $game);
 
         $this->progress->reset($game);
+        $this->bag->reset($game);
+        $this->stage1->reset($game);
 
         return redirect()->route('games.show', [
             'city' => $city,
