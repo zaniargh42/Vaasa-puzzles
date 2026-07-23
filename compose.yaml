@@ -10,7 +10,10 @@ services:
             - 'host.docker.internal:host-gateway'
         ports:
             - '${APP_PORT:-80}:80'
-            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+            # Vite port publish disabled: WSL/Docker Desktop port-forward can fail
+            # with status 500 and block the whole laravel.test container from starting.
+            # Use built assets, or run Vite on the host / restore this line after a Docker restart.
+            # - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
         environment:
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
