@@ -28,7 +28,9 @@ const { t, direction } = useI18n();
 
 <template>
     <div class="min-h-screen bg-stone-100 text-stone-900" :dir="direction">
-        <header class="border-b border-stone-200 bg-white/90 backdrop-blur">
+        <header
+            class="sticky top-0 z-50 border-b border-stone-200 bg-white/90 backdrop-blur"
+        >
             <div
                 class="mx-auto flex items-center justify-between gap-4 px-4 py-4 sm:px-6"
                 :class="wide ? 'max-w-5xl' : 'max-w-3xl'"

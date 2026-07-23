@@ -563,7 +563,7 @@ defineExpose({
 
         <div
             ref="mapEl"
-            class="w-full overflow-hidden rounded-xl border border-stone-300 bg-stone-200"
+            class="relative z-0 w-full overflow-hidden rounded-xl border border-stone-300 bg-stone-200"
             :class="compact ? 'h-[320px]' : 'h-[480px]'"
             dir="ltr"
         />
