@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from '@/composables/useI18n';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -55,6 +56,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:placement', 'locked']);
+
+const { t } = useI18n();
 
 const IMAGE_ASPECT = 756 / 1024;
 
@@ -554,17 +557,9 @@ defineExpose({
                 class="h-28 w-auto rounded border border-amber-300 bg-white object-contain"
             />
             <p class="text-sm leading-6 text-amber-950">
-                Drag, rotate, and scale until it roughly fits. When close
-                enough, it will snap and lock into place.
+                {{ t('stage1.align_hint') }}
             </p>
         </div>
-
-        <p
-            v-if="isLockedMode"
-            class="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800"
-        >
-            Locked on the correct placement. Use opacity to fade the old map.
-        </p>
 
         <div
             ref="mapEl"
@@ -576,7 +571,7 @@ defineExpose({
         <div class="grid gap-3 sm:grid-cols-2" dir="ltr">
             <template v-if="! isLockedMode">
                 <label class="text-sm text-stone-700">
-                    <span class="mb-1 block font-medium">Rotation (deg)</span>
+                    <span class="mb-1 block font-medium">{{ t('stage1.rotation') }}</span>
                     <input
                         v-model.number="placement.rotation_deg"
                         type="range"
@@ -594,7 +589,7 @@ defineExpose({
                 </label>
 
                 <label class="text-sm text-stone-700">
-                    <span class="mb-1 block font-medium">Width (meters)</span>
+                    <span class="mb-1 block font-medium">{{ t('stage1.width') }}</span>
                     <input
                         v-model.number="placement.width_meters"
                         type="range"
@@ -613,7 +608,7 @@ defineExpose({
             </template>
 
             <label class="text-sm text-stone-700" :class="isLockedMode ? 'sm:col-span-2' : ''">
-                <span class="mb-1 block font-medium">Opacity</span>
+                <span class="mb-1 block font-medium">{{ t('stage1.opacity') }}</span>
                 <input
                     v-model.number="placement.opacity"
                     type="range"
@@ -625,7 +620,7 @@ defineExpose({
             </label>
 
             <div v-if="! isLockedMode" class="text-sm text-stone-700">
-                <span class="mb-1 block font-medium">Nudge center</span>
+                <span class="mb-1 block font-medium">{{ t('stage1.nudge') }}</span>
                 <div class="flex flex-wrap gap-2">
                     <button
                         type="button"

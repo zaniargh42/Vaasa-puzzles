@@ -94,6 +94,11 @@ return [
         'legend_next' => 'Next destination — Vaasa Prison',
         'success_title' => 'The plan has locked into place',
         'success_body' => 'The investigation seal is set. The grain route grows clearer — see the next destination on the map.',
+        'align_hint' => 'Drag, rotate, and scale until it roughly fits. When close enough, it will snap and lock into place.',
+        'rotation' => 'Rotation (deg)',
+        'width' => 'Width (meters)',
+        'opacity' => 'Opacity',
+        'nudge' => 'Nudge center',
     ],
 
     'locations' => [

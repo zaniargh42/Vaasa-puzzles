@@ -94,6 +94,11 @@ return [
         'legend_next' => 'Seuraava kohde — Vaasan vankila',
         'success_title' => 'Suunnitelma lukittui paikoilleen',
         'success_body' => 'Tutkimuksen sinetti on lyöty. Viljan reitti selkenee — katso seuraava kohde kartalta.',
+        'align_hint' => 'Vedä, kierrä ja skaalaa kunnes se sopii suunnilleen. Kun olet tarpeeksi lähellä, se napsahtaa ja lukittuu.',
+        'rotation' => 'Kierto (astetta)',
+        'width' => 'Leveys (metriä)',
+        'opacity' => 'Peittävyys',
+        'nudge' => 'Siirrä keskipistettä',
     ],
 
     'locations' => [
